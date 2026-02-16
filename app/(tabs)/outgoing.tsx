@@ -1,33 +1,40 @@
-import ExpenseDetailModal from '@/components/modals/ExpenseDetailModal';
-import SortButtons from '@/components/SortButtons';
-import SwipeableExpenseItem from '@/components/SwipeableExpenseItem';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { formatPeriodRange, getDateRange, TimePeriod, TimePeriodSelector } from '@/components/TimePeriodSelector';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { useExpenses, useExpenseStatsByPeriod } from '@/hooks/useExpenses';
-import { Expense } from '@/types/expense';
-import { sortExpenses, SortOrder, SortType } from '@/utils/sortExpenses';
-import React, { useMemo, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ExpenseDetailModal from "@/components/modals/ExpenseDetailModal";
+import SortButtons from "@/components/SortButtons";
+import SwipeableExpenseItem from "@/components/SwipeableExpenseItem";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import {
+  formatPeriodRange,
+  getDateRange,
+  TimePeriod,
+  TimePeriodSelector,
+} from "@/components/TimePeriodSelector";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useExpenses, useExpenseStatsByPeriod } from "@/hooks/useExpenses";
+import { Expense } from "@/types/expense";
+import { sortExpenses, SortOrder, SortType } from "@/utils/sortExpenses";
+import React, { useMemo, useState } from "react";
+import { FlatList, ScrollView, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function OutgoingScreen() {
   const insets = useSafeAreaInsets();
   const { formatAmount } = useCurrency();
   const { user } = useAuth();
-  const { data: expenses, isLoading: expensesLoading } = useExpenses({ type: 'outgoing' });
+  const { data: expenses, isLoading: expensesLoading } = useExpenses({
+    type: "outgoing",
+  });
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [sortType, setSortType] = useState<SortType>('date');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('month');
+  const [sortType, setSortType] = useState<SortType>("date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("month");
 
   // Get date range for selected period
   const dateRange = useMemo(() => {
-    if (selectedPeriod === 'all') {
+    if (selectedPeriod === "all") {
       return { startDate: undefined, endDate: undefined };
     }
     const { startDate, endDate } = getDateRange(selectedPeriod);
@@ -40,7 +47,7 @@ export default function OutgoingScreen() {
   // Get stats for the selected period
   const { data: stats, isLoading: statsLoading } = useExpenseStatsByPeriod(
     dateRange.startDate,
-    dateRange.endDate
+    dateRange.endDate,
   );
 
   const outgoingExpenses = useMemo(() => {
@@ -66,23 +73,24 @@ export default function OutgoingScreen() {
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol name="arrow.up.circle.fill" size={32} color="#dc3545" />
-          <ThemedText type="title" style={styles.title}>Outgoing (Spent)</ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            Outgoing (Spent)
+          </ThemedText>
         </ThemedView>
-        
+
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle">Money Spent</ThemedText>
           <ThemedText style={styles.description}>
             Track all the money you've spent for the selected time period.
           </ThemedText>
-          
+
           <ThemedView style={styles.timePeriodContainer}>
             <TimePeriodSelector
               selectedPeriod={selectedPeriod}
               onPeriodChange={setSelectedPeriod}
             />
           </ThemedView>
-          
+
           <ThemedView style={styles.periodInfo}>
             <IconSymbol name="calendar" size={16} color="#666" />
             <ThemedText style={styles.periodText}>
@@ -92,15 +100,23 @@ export default function OutgoingScreen() {
         </ThemedView>
 
         <ThemedView style={styles.totalCard}>
-          <ThemedText type="subtitle" darkColor='black' style={styles.totalLabel}>Total Spent</ThemedText>
-          <ThemedText 
-            type="title" 
+          <ThemedText
+            type="subtitle"
+            darkColor="black"
+            style={styles.totalLabel}
+          >
+            Total Spent
+          </ThemedText>
+          <ThemedText
+            type="title"
             style={styles.totalAmount}
             numberOfLines={1}
             adjustsFontSizeToFit={true}
             minimumFontScale={0.6}
           >
-            {statsLoading ? '...' : `-${formatAmount(stats?.totalOutgoing || 0)}`}
+            {statsLoading
+              ? "..."
+              : `-${formatAmount(stats?.totalOutgoing || 0)}`}
           </ThemedText>
         </ThemedView>
 
@@ -114,10 +130,13 @@ export default function OutgoingScreen() {
             />
           </View>
           {expensesLoading ? (
-            <ThemedText style={styles.placeholder}>Loading expenses...</ThemedText>
+            <ThemedText style={styles.placeholder}>
+              Loading expenses...
+            </ThemedText>
           ) : outgoingExpenses.length === 0 ? (
             <ThemedText style={styles.placeholder}>
-              No expenses recorded yet. Add your first expense to start tracking your spending.
+              No expenses recorded yet. Add your first expense to start tracking
+              your spending.
             </ThemedText>
           ) : (
             <FlatList
@@ -136,7 +155,7 @@ export default function OutgoingScreen() {
           )}
         </ThemedView>
       </ScrollView>
-      
+
       <ExpenseDetailModal
         visible={isDetailModalVisible}
         onClose={handleCloseDetailModal}
@@ -154,20 +173,20 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   title: {
     marginTop: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   section: {
     marginBottom: 25,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   description: {
@@ -175,40 +194,40 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   totalCard: {
-    backgroundColor: '#fdf2f2',
+    backgroundColor: "#fdf2f2",
     padding: 20,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 25,
   },
   totalLabel: {
     marginBottom: 5,
   },
   totalAmount: {
-    color: '#dc3545',
+    color: "#dc3545",
   },
   placeholder: {
     marginTop: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     opacity: 0.7,
   },
   swipeableContainer: {
     marginBottom: 10,
   },
   expenseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 15,
     marginBottom: 10,
-    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+    backgroundColor: "rgba(220, 53, 69, 0.1)",
     borderRadius: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#dc3545',
+    borderLeftColor: "#dc3545",
   },
   expenseInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   expenseDetails: {
@@ -217,7 +236,7 @@ const styles = StyleSheet.create({
   },
   expenseTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   expenseDescription: {
     fontSize: 14,
@@ -233,25 +252,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.6,
     marginTop: 2,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   expenseAmount: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   periodInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 0,
     padding: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    backgroundColor: "rgba(0, 0, 0, 0.03)",
     borderRadius: 6,
   },
   periodText: {
     fontSize: 14,
     marginLeft: 6,
     opacity: 0.8,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   timePeriodContainer: {
     marginTop: 20,

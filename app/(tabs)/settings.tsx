@@ -70,7 +70,6 @@ export default function SettingsScreen() {
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol name="gear" size={32} color="#007AFF" />
           <ThemedText type="title" style={styles.title}>Settings</ThemedText>
         </ThemedView>
 

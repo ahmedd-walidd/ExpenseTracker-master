@@ -67,7 +67,6 @@ export default function IncomingScreen() {
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol name="arrow.down.circle.fill" size={32} color="#28a745" />
           <ThemedText type="title" style={styles.title}>Incoming (Received)</ThemedText>
         </ThemedView>
 

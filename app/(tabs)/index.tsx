@@ -68,7 +68,6 @@ export default function HomeScreen() {
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedView style={styles.header}>
-          <IconSymbol name="list.bullet" size={32} color="#007AFF" />
           <ThemedText type="title" style={styles.title}>All Expenses Overview</ThemedText>
         </ThemedView>
         
