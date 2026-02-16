@@ -4,7 +4,7 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[]
+  | Json[];
 
 export interface Database {
   public: {
@@ -16,9 +16,14 @@ export interface Database {
           title: string;
           amount: number;
           description: string | null;
-          type: 'incoming' | 'outgoing';
+          notes: string | null;
+          date: string;
+          type: "incoming" | "outgoing";
           category: string | null;
-          currency: string;
+          payment_method: string | null;
+          is_recurring: boolean;
+          recurring_interval: string | null;
+          receipt_url: string | null;
           created_at: string;
           updated_at: string;
         };

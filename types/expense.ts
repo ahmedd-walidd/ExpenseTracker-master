@@ -4,9 +4,8 @@ export interface Expense {
   title: string;
   amount: number;
   description: string | null;
-  type: 'incoming' | 'outgoing';
+  type: "incoming" | "outgoing";
   category: string | null;
-  currency: string;
   created_at: string;
   updated_at: string;
 }
@@ -16,18 +15,16 @@ export interface ExpenseInsert {
   title: string;
   amount: number;
   description?: string | null;
-  type: 'incoming' | 'outgoing';
+  type: "incoming" | "outgoing";
   category?: string | null;
-  currency: string;
 }
 
 export interface ExpenseUpdate {
   title?: string;
   amount?: number;
   description?: string | null;
-  type?: 'incoming' | 'outgoing';
+  type?: "incoming" | "outgoing";
   category?: string | null;
-  currency?: string;
 }
 
 export interface Profile {
@@ -39,7 +36,7 @@ export interface Profile {
   updated_at: string;
 }
 
-export type ExpenseType = 'incoming' | 'outgoing';
+export type ExpenseType = "incoming" | "outgoing";
 
 export interface ExpenseFilters {
   type?: ExpenseType;
