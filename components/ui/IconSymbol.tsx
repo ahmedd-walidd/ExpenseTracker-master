@@ -33,6 +33,7 @@ const ICON_MAP: Record<
   plus: { library: "Ionicons", name: "add" },
   trash: { library: "Ionicons", name: "trash-outline" },
   xmark: { library: "Ionicons", name: "close" },
+  pencil: { library: "Ionicons", name: "pencil" },
 
   // Arrows
   "arrow.down.circle.fill": { library: "Ionicons", name: "arrow-down-circle" },

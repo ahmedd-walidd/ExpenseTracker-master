@@ -348,7 +348,7 @@ export default function ExpenseDetailModal({
               color={displayType === "incoming" ? "#28a745" : "#dc3545"}
             />
             <View style={styles.amountTextContainer}>
-              {editingField === "amount" || editingField === "type" ? (
+              {editingField === "amount" ? (
                 <View style={styles.editAmountContainer}>
                   <TouchableOpacity
                     style={[
@@ -420,35 +420,38 @@ export default function ExpenseDetailModal({
                   placeholderTextColor={colors.text + "80"}
                   keyboardType="numeric"
                   returnKeyType="done"
-                  onBlur={handleFieldBlur}
+                  onSubmitEditing={handleFieldBlur}
                   autoFocus
                 />
               ) : (
                 <TouchableOpacity onPress={() => handleFieldPress("amount")}>
-                  <ThemedText
-                    style={[
-                      styles.amountText,
-                      styles.editableText,
-                      {
-                        color:
-                          displayType === "incoming" ? "#28a745" : "#dc3545",
-                      },
-                    ]}
-                    numberOfLines={1}
-                    adjustsFontSizeToFit={true}
-                    minimumFontScale={0.3}
-                  >
-                    {displayType === "incoming" ? "+" : "-"}
-                    {formatAmount(displayAmount)}
-                  </ThemedText>
+                  <View style={styles.editableFieldContainer}>
+                    <ThemedText
+                      style={[
+                        styles.amountText,
+                        styles.editableText,
+                        {
+                          color:
+                            displayType === "incoming" ? "#28a745" : "#dc3545",
+                        },
+                      ]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit={true}
+                      minimumFontScale={0.3}
+                    >
+                      {displayType === "incoming" ? "+" : "-"}
+                      {formatAmount(displayAmount)}
+                    </ThemedText>
+                    <IconSymbol
+                      size={16}
+                      name="pencil"
+                      color={displayType === "incoming" ? "#28a745" : "#dc3545"}
+                      style={styles.editIcon}
+                    />
+                  </View>
                 </TouchableOpacity>
               )}
             </View>
-            <TouchableOpacity onPress={() => handleFieldPress("type")}>
-              <ThemedText style={[styles.typeText, styles.editableText]}>
-                {displayType === "incoming" ? "Income" : "Expense"}
-              </ThemedText>
-            </TouchableOpacity>
           </ThemedView>
 
           {/* Details */}
@@ -470,19 +473,27 @@ export default function ExpenseDetailModal({
                     placeholder="Enter title"
                     placeholderTextColor={colors.text + "80"}
                     returnKeyType="done"
-                    onBlur={handleFieldBlur}
+                    onSubmitEditing={handleFieldBlur}
                     autoFocus
                   />
                 ) : (
                   <TouchableOpacity onPress={() => handleFieldPress("title")}>
-                    <ThemedText
-                      style={[styles.detailValue, styles.editableText]}
-                      numberOfLines={2}
-                      adjustsFontSizeToFit={true}
-                      minimumFontScale={0.8}
-                    >
-                      {expense.title}
-                    </ThemedText>
+                    <View style={styles.editableFieldContainer}>
+                      <ThemedText
+                        style={[styles.detailValue, styles.editableText]}
+                        numberOfLines={2}
+                        adjustsFontSizeToFit={true}
+                        minimumFontScale={0.8}
+                      >
+                        {expense.title}
+                      </ThemedText>
+                      <IconSymbol
+                        size={16}
+                        name="pencil"
+                        color={colors.text}
+                        style={styles.editIcon}
+                      />
+                    </View>
                   </TouchableOpacity>
                 )}
               </View>
@@ -512,18 +523,26 @@ export default function ExpenseDetailModal({
                     numberOfLines={3}
                     textAlignVertical="top"
                     returnKeyType="done"
-                    onBlur={handleFieldBlur}
+                    onSubmitEditing={handleFieldBlur}
                     autoFocus
                   />
                 ) : (
                   <TouchableOpacity
                     onPress={() => handleFieldPress("description")}
                   >
-                    <ThemedText
-                      style={[styles.detailValue, styles.editableText]}
-                    >
-                      {expense.description || "No description"}
-                    </ThemedText>
+                    <View style={styles.editableFieldContainer}>
+                      <ThemedText
+                        style={[styles.detailValue, styles.editableText]}
+                      >
+                        {expense.description || "No description"}
+                      </ThemedText>
+                      <IconSymbol
+                        size={16}
+                        name="pencil"
+                        color={colors.text}
+                        style={styles.editIcon}
+                      />
+                    </View>
                   </TouchableOpacity>
                 )}
               </View>
@@ -708,5 +727,13 @@ const styles = StyleSheet.create({
   descriptionInput: {
     minHeight: 60,
     paddingTop: 8,
+  },
+  editableFieldContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  editIcon: {
+    opacity: 0.6,
   },
 });
