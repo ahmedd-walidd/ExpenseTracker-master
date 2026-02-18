@@ -75,6 +75,7 @@ export default function TabLayout() {
         name="analytics"
         options={{
           title: "Analytics",
+          href: null,
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="sparkles" color={color} />
           ),

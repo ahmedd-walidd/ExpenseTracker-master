@@ -1,19 +1,31 @@
-import ExpenseDetailModal from '@/components/modals/ExpenseDetailModal';
-import SortButtons from '@/components/SortButtons';
-import SwipeableExpenseItem from '@/components/SwipeableExpenseItem';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { formatPeriodRange, getDateRange, TimePeriod, TimePeriodSelector } from '@/components/TimePeriodSelector';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCurrency } from '@/contexts/CurrencyContext';
-import { useExpenses, useExpenseStatsByPeriod } from '@/hooks/useExpenses';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { Expense } from '@/types/expense';
-import { sortExpenses, SortOrder, SortType } from '@/utils/sortExpenses';
-import React, { useMemo, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ExpenseDetailModal from "@/components/modals/ExpenseDetailModal";
+import SortButtons from "@/components/SortButtons";
+import SwipeableExpenseItem from "@/components/SwipeableExpenseItem";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import {
+  formatPeriodRange,
+  getDateRange,
+  TimePeriod,
+  TimePeriodSelector,
+} from "@/components/TimePeriodSelector";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { useExpenses, useExpenseStatsByPeriod } from "@/hooks/useExpenses";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Expense } from "@/types/expense";
+import { sortExpenses, SortOrder, SortType } from "@/utils/sortExpenses";
+import { router } from "expo-router";
+import React, { useMemo, useState } from "react";
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
@@ -22,14 +34,14 @@ export default function HomeScreen() {
   const { data: expenses, isLoading: expensesLoading } = useExpenses();
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
-  const [sortType, setSortType] = useState<SortType>('date');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('month');
-  const textColor = useThemeColor({}, 'text');
+  const [sortType, setSortType] = useState<SortType>("date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("month");
+  const textColor = useThemeColor({}, "text");
 
   // Get date range for selected period
   const dateRange = useMemo(() => {
-    if (selectedPeriod === 'all') {
+    if (selectedPeriod === "all") {
       return { startDate: undefined, endDate: undefined };
     }
     const { startDate, endDate } = getDateRange(selectedPeriod);
@@ -42,9 +54,9 @@ export default function HomeScreen() {
   // Get stats for the selected period
   const { data: stats, isLoading: statsLoading } = useExpenseStatsByPeriod(
     dateRange.startDate,
-    dateRange.endDate
+    dateRange.endDate,
   );
-  
+
   const recentExpenses = useMemo(() => {
     const rawExpenses = expenses?.slice(0, 10) || [];
     return sortExpenses(rawExpenses, sortType, sortOrder);
@@ -68,22 +80,35 @@ export default function HomeScreen() {
     <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <ThemedView style={styles.header}>
-          <ThemedText type="title" style={styles.title}>All Expenses Overview</ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            All Expenses Overview
+          </ThemedText>
+          <TouchableOpacity
+            style={styles.analyticsButton}
+            onPress={() => router.push("/(tabs)/analytics")}
+            accessibilityRole="button"
+            accessibilityLabel="View Analytics"
+          >
+            <IconSymbol size={18} name="sparkles" color="#007AFF" />
+            <ThemedText style={styles.analyticsButtonText}>
+              Analytics
+            </ThemedText>
+          </TouchableOpacity>
         </ThemedView>
-        
+
         <ThemedView style={styles.section}>
           <ThemedText type="subtitle">Overview</ThemedText>
           <ThemedText style={styles.description}>
             View your expense summary for the selected time period.
           </ThemedText>
-          
+
           <ThemedView style={styles.timePeriodContainer}>
             <TimePeriodSelector
               selectedPeriod={selectedPeriod}
               onPeriodChange={setSelectedPeriod}
             />
           </ThemedView>
-          
+
           <ThemedView style={styles.periodInfo}>
             <IconSymbol name="calendar" size={16} color="#666" />
             <ThemedText style={styles.periodText}>
@@ -96,65 +121,75 @@ export default function HomeScreen() {
           {/* Balance Card - Main focal point */}
           <ThemedView style={styles.balanceCard}>
             <IconSymbol name="equal.circle.fill" size={32} color="#007AFF" />
-            <ThemedText 
-              style={styles.balanceLabel}
-              numberOfLines={1}
-            >
+            <ThemedText style={styles.balanceLabel} numberOfLines={1}>
               Balance
             </ThemedText>
-            <ThemedText 
-              style={[styles.balanceAmount, { 
-                color: (stats?.netAmount || 0) === 0 ? textColor :
-                       (stats?.netAmount || 0) > 0 ? '#28a745' : '#dc3545' 
-              }]}
+            <ThemedText
+              style={[
+                styles.balanceAmount,
+                {
+                  color:
+                    (stats?.netAmount || 0) === 0
+                      ? textColor
+                      : (stats?.netAmount || 0) > 0
+                        ? "#28a745"
+                        : "#dc3545",
+                },
+              ]}
               numberOfLines={2}
               textBreakStrategy="simple"
             >
-              {statsLoading ? '...' : 
-                (stats?.netAmount || 0) === 0 
+              {statsLoading
+                ? "..."
+                : (stats?.netAmount || 0) === 0
                   ? formatAmount(stats?.netAmount || 0)
-                  : (stats?.netAmount || 0) > 0 
+                  : (stats?.netAmount || 0) > 0
                     ? `+${formatAmount(stats?.netAmount || 0)}`
-                    : `-${formatAmount(stats?.netAmount || 0)}`
-              }
+                    : `-${formatAmount(stats?.netAmount || 0)}`}
             </ThemedText>
           </ThemedView>
 
           {/* Incoming and Outgoing Cards - Secondary info */}
           <ThemedView style={styles.secondaryStatsContainer}>
             <ThemedView style={styles.statCard}>
-              <IconSymbol name="arrow.down.circle.fill" size={24} color="#28a745" />
-              <ThemedText 
-                style={styles.statLabel}
-                numberOfLines={1}
-              >
+              <IconSymbol
+                name="arrow.down.circle.fill"
+                size={24}
+                color="#28a745"
+              />
+              <ThemedText style={styles.statLabel} numberOfLines={1}>
                 Incoming
               </ThemedText>
-              <ThemedText 
+              <ThemedText
                 style={styles.statAmount}
                 numberOfLines={1}
                 adjustsFontSizeToFit={true}
                 minimumFontScale={0.6}
               >
-                {statsLoading ? '...' : `+${formatAmount(stats?.totalIncoming || 0)}`}
+                {statsLoading
+                  ? "..."
+                  : `+${formatAmount(stats?.totalIncoming || 0)}`}
               </ThemedText>
             </ThemedView>
-            
+
             <ThemedView style={styles.statCard}>
-              <IconSymbol name="arrow.up.circle.fill" size={24} color="#dc3545" />
-              <ThemedText 
-                style={styles.statLabel}
-                numberOfLines={1}
-              >
+              <IconSymbol
+                name="arrow.up.circle.fill"
+                size={24}
+                color="#dc3545"
+              />
+              <ThemedText style={styles.statLabel} numberOfLines={1}>
                 Outgoing
               </ThemedText>
-              <ThemedText 
+              <ThemedText
                 style={styles.statAmount}
                 numberOfLines={1}
                 adjustsFontSizeToFit={true}
                 minimumFontScale={0.6}
               >
-                {statsLoading ? '...' : `-${formatAmount(stats?.totalOutgoing || 0)}`}
+                {statsLoading
+                  ? "..."
+                  : `-${formatAmount(stats?.totalOutgoing || 0)}`}
               </ThemedText>
             </ThemedView>
           </ThemedView>
@@ -170,11 +205,14 @@ export default function HomeScreen() {
             />
           </View>
           {expensesLoading ? (
-            <ThemedText style={styles.placeholder}>Loading expenses...</ThemedText>
+            <ThemedText style={styles.placeholder}>
+              Loading expenses...
+            </ThemedText>
           ) : recentExpenses.length === 0 ? (
             <>
               <ThemedText style={styles.placeholder}>
-                No expenses recorded yet. Start tracking your expenses to see them here.
+                No expenses recorded yet. Start tracking your expenses to see
+                them here.
               </ThemedText>
             </>
           ) : (
@@ -194,7 +232,7 @@ export default function HomeScreen() {
           )}
         </ThemedView>
       </ScrollView>
-      
+
       <ExpenseDetailModal
         visible={isDetailModalVisible}
         onClose={handleCloseDetailModal}
@@ -212,20 +250,22 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 30,
   },
   title: {
     marginTop: 10,
-    textAlign: 'center',
+    flex: 1,
   },
   section: {
     marginBottom: 25,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 12,
   },
   description: {
@@ -236,70 +276,70 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   balanceCard: {
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    backgroundColor: "rgba(0, 122, 255, 0.1)",
     padding: 24,
     borderRadius: 16,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
     minHeight: 160,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   balanceLabel: {
     fontSize: 16,
     marginTop: 8,
     marginBottom: 4,
     opacity: 0.8,
-    textAlign: 'center',
-    fontWeight: '500',
+    textAlign: "center",
+    fontWeight: "500",
   },
   balanceAmount: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 8,
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 36,
     paddingVertical: 4,
   },
   secondaryStatsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: 15,
   },
   statCard: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
     minHeight: 100,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   statLabel: {
     fontSize: 12,
     marginTop: 6,
     opacity: 0.7,
-    textAlign: 'center',
+    textAlign: "center",
   },
   statAmount: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginTop: 4,
-    textAlign: 'center',
+    textAlign: "center",
   },
   placeholder: {
     marginTop: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     opacity: 0.7,
   },
   quickActions: {
     marginTop: 20,
     padding: 15,
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    backgroundColor: "rgba(0, 122, 255, 0.1)",
     borderRadius: 8,
   },
   quickActionsTitle: {
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
   },
   quickActionItem: {
@@ -311,17 +351,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   expenseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 15,
     marginBottom: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
     borderRadius: 8,
   },
   expenseInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   expenseDetails: {
@@ -330,7 +370,7 @@ const styles = StyleSheet.create({
   },
   expenseTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   expenseDescription: {
     fontSize: 14,
@@ -344,24 +384,38 @@ const styles = StyleSheet.create({
   },
   expenseAmount: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   periodInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 0,
     padding: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    backgroundColor: "rgba(0, 0, 0, 0.03)",
     borderRadius: 6,
   },
   periodText: {
     fontSize: 14,
     marginLeft: 6,
     opacity: 0.8,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   timePeriodContainer: {
     marginTop: 20,
     marginBottom: 5,
+  },
+  analyticsButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "rgba(0, 122, 255, 0.1)",
+  },
+  analyticsButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#007AFF",
   },
 });

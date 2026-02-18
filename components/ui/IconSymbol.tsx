@@ -71,6 +71,7 @@ const ICON_MAP: Record<
   "info.circle": { library: "Ionicons", name: "information-circle-outline" },
   "list.bullet": { library: "Ionicons", name: "list" },
   "checkmark.circle.fill": { library: "Ionicons", name: "checkmark-circle" },
+  checkmark: { library: "Ionicons", name: "checkmark" },
 
   // Sort-related
   "calendar.badge.clock": { library: "Ionicons", name: "calendar" },

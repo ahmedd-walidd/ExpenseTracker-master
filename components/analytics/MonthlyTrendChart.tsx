@@ -59,8 +59,10 @@ export default function MonthlyTrendChart({
                 >
                   {currencySymbol}
                   {trend.total >= 1000
-                    ? `${(trend.total / 1000).toFixed(1)}k`
-                    : trend.total.toFixed(0)}
+                    ? `${(trend.total / 1000).toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}k`
+                    : trend.total.toLocaleString("en-US", {
+                        maximumFractionDigits: 0,
+                      })}
                 </ThemedText>
 
                 {/* Change indicator */}

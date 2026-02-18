@@ -4,11 +4,11 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import React, { useState } from "react";
 import {
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import AddExpenseModal from "./modals/AddExpenseModal";
 
@@ -63,8 +63,8 @@ export default function CustomTabBar({
 
           const isFocused = state.index === index;
 
-          // Skip the add tab - we'll handle it separately
-          if (route.name === "add") {
+          // Skip tabs that shouldn't appear in the bottom bar
+          if (route.name === "add" || route.name === "analytics") {
             return null;
           }
 

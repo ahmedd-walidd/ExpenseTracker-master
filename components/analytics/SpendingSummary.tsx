@@ -58,10 +58,31 @@ export default function SpendingSummary({
 
   // Format the total: use compact format for large numbers
   const formatTotal = (amount: number): string => {
-    if (amount >= 1_000_000) return (amount / 1_000_000).toFixed(1) + "M";
-    if (amount >= 100_000) return (amount / 1_000).toFixed(0) + "K";
-    if (amount >= 10_000) return (amount / 1_000).toFixed(1) + "K";
-    return amount.toFixed(2);
+    if (amount >= 1_000_000)
+      return (
+        (amount / 1_000_000).toLocaleString("en-US", {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "M"
+      );
+    if (amount >= 100_000)
+      return (
+        (amount / 1_000).toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }) + "K"
+      );
+    if (amount >= 10_000)
+      return (
+        (amount / 1_000).toLocaleString("en-US", {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }) + "K"
+      );
+    return amount.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   return (

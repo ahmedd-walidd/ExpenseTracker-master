@@ -71,7 +71,9 @@ export default function CategoryBreakdown({
               </View>
               <ThemedText style={styles.barValue}>
                 {currencySymbol}
-                {category.total.toFixed(0)}
+                {category.total.toLocaleString("en-US", {
+                  maximumFractionDigits: 0,
+                })}
               </ThemedText>
             </View>
           );
@@ -117,7 +119,10 @@ function CategoryCard({
         </ThemedText>
         <ThemedText style={styles.cardAmount}>
           {currencySymbol}
-          {category.total.toFixed(2)}
+          {category.total.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </ThemedText>
         <View style={styles.cardFooter}>
           <ThemedText style={[styles.cardPercentage, { color }]}>

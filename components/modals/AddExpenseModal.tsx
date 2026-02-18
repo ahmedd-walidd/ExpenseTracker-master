@@ -6,12 +6,14 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useCreateExpense } from "@/hooks/useExpenses";
 import React, { useState } from "react";
 import {
+  Keyboard,
   Modal,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import Toast from "react-native-toast-message";
@@ -64,6 +66,11 @@ export default function AddExpenseModal({
   const { formatAmount } = useCurrency();
   const { user } = useAuth();
   const createExpenseMutation = useCreateExpense();
+
+  const handleClose = () => {
+    setErrors({});
+    onClose();
+  };
 
   const handleAddExpense = async () => {
     if (createExpenseMutation.isPending) return;
@@ -180,202 +187,209 @@ export default function AddExpenseModal({
       visible={visible}
       animationType="slide"
       presentationStyle="fullScreen"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: colors.background }]}
-      >
-        {/* Header */}
-        <View style={[styles.header, { borderBottomColor: colors.border }]}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <IconSymbol size={24} name="xmark" color={colors.text} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            Add Expense
-          </Text>
-          <TouchableOpacity
-            onPress={handleAddExpense}
-            style={[
-              styles.saveButton,
-              createExpenseMutation.isPending && styles.saveButtonDisabled,
-            ]}
-            disabled={createExpenseMutation.isPending}
-          >
-            <IconSymbol
-              size={24}
-              name={
-                createExpenseMutation.isPending
-                  ? "arrow.clockwise"
-                  : "checkmark"
-              }
-              color={colors.text}
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* Content */}
-        <View style={styles.content}>
-          {/* Title Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>
-              Title <Text style={styles.required}>*</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <SafeAreaView
+          style={[styles.container, { backgroundColor: colors.background }]}
+        >
+          {/* Header */}
+          <View style={[styles.header, { borderBottomColor: colors.border }]}>
+            <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+              <IconSymbol size={24} name="xmark" color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>
+              Add Expense
             </Text>
-            <TextInput
+            <TouchableOpacity
+              onPress={handleAddExpense}
               style={[
-                styles.input,
-                {
-                  backgroundColor: colors.card,
-                  color: colors.text,
-                  borderColor: errors.title ? "#ef4444" : colors.border,
-                },
+                styles.saveButton,
+                createExpenseMutation.isPending && styles.saveButtonDisabled,
               ]}
-              value={title}
-              onChangeText={(text) => {
-                setTitle(text);
-                if (errors.title) {
-                  const newErrors = { ...errors };
-                  delete newErrors.title;
-                  setErrors(newErrors);
+              disabled={createExpenseMutation.isPending}
+            >
+              <IconSymbol
+                size={24}
+                name={
+                  createExpenseMutation.isPending
+                    ? "arrow.clockwise"
+                    : "checkmark"
                 }
-              }}
-              placeholder="Enter title..."
-              placeholderTextColor={colors.tabIconDefault}
-              autoFocus
-            />
-            {errors.title && (
-              <Text style={[styles.errorText, { color: "#ef4444" }]}>
-                {errors.title}
-              </Text>
-            )}
+                color={colors.text}
+              />
+            </TouchableOpacity>
           </View>
 
-          {/* Amount Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>
-              Amount <Text style={styles.required}>*</Text>
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.card,
-                  color: colors.text,
-                  borderColor: errors.amount ? "#ef4444" : colors.border,
-                },
-              ]}
-              value={amount}
-              onChangeText={(text) => {
-                setAmount(text);
-                if (errors.amount) {
-                  const newErrors = { ...errors };
-                  delete newErrors.amount;
-                  setErrors(newErrors);
-                }
-              }}
-              placeholder="0.00"
-              placeholderTextColor={colors.tabIconDefault}
-              keyboardType="numeric"
-            />
-            {errors.amount && (
-              <Text style={[styles.errorText, { color: "#ef4444" }]}>
-                {errors.amount}
+          {/* Content */}
+          <View style={styles.content}>
+            {/* Title Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.text }]}>
+                Title <Text style={styles.required}>*</Text>
               </Text>
-            )}
-          </View>
-
-          {/* Description Input */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>
-              Description
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: colors.card,
-                  color: colors.text,
-                  borderColor: errors.description ? "#ef4444" : colors.border,
-                },
-              ]}
-              value={description}
-              onChangeText={(text) => {
-                setDescription(text);
-                if (errors.description) {
-                  const newErrors = { ...errors };
-                  delete newErrors.description;
-                  setErrors(newErrors);
-                }
-              }}
-              placeholder="Enter description..."
-              placeholderTextColor={colors.tabIconDefault}
-              multiline
-            />
-            {errors.description && (
-              <Text style={[styles.errorText, { color: "#ef4444" }]}>
-                {errors.description}
-              </Text>
-            )}
-          </View>
-
-          {/* Type Selection */}
-          <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Type</Text>
-            <View style={styles.typeSelector}>
-              <TouchableOpacity
+              <TextInput
                 style={[
-                  styles.typeButton,
-                  { backgroundColor: colors.card, borderColor: colors.border },
-                  type === "incoming" && {
-                    backgroundColor: "#22c55e",
-                    borderColor: "#22c55e",
+                  styles.input,
+                  {
+                    backgroundColor: colors.card,
+                    color: colors.text,
+                    borderColor: errors.title ? "#ef4444" : colors.border,
                   },
                 ]}
-                onPress={() => setType("incoming")}
-              >
-                <IconSymbol
-                  size={20}
-                  name="arrow.down.circle.fill"
-                  color={type === "incoming" ? "white" : colors.text}
-                />
-                <Text
-                  style={[
-                    styles.typeButtonText,
-                    { color: type === "incoming" ? "white" : colors.text },
-                  ]}
-                >
-                  Income
+                value={title}
+                onChangeText={(text) => {
+                  setTitle(text);
+                  if (errors.title) {
+                    const newErrors = { ...errors };
+                    delete newErrors.title;
+                    setErrors(newErrors);
+                  }
+                }}
+                placeholder="Enter title..."
+                placeholderTextColor={colors.tabIconDefault}
+              />
+              {errors.title && (
+                <Text style={[styles.errorText, { color: "#ef4444" }]}>
+                  {errors.title}
                 </Text>
-              </TouchableOpacity>
+              )}
+            </View>
 
-              <TouchableOpacity
+            {/* Amount Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.text }]}>
+                Amount <Text style={styles.required}>*</Text>
+              </Text>
+              <TextInput
                 style={[
-                  styles.typeButton,
-                  { backgroundColor: colors.card, borderColor: colors.border },
-                  type === "outgoing" && {
-                    backgroundColor: "#ef4444",
-                    borderColor: "#ef4444",
+                  styles.input,
+                  {
+                    backgroundColor: colors.card,
+                    color: colors.text,
+                    borderColor: errors.amount ? "#ef4444" : colors.border,
                   },
                 ]}
-                onPress={() => setType("outgoing")}
-              >
-                <IconSymbol
-                  size={20}
-                  name="arrow.up.circle.fill"
-                  color={type === "outgoing" ? "white" : colors.text}
-                />
-                <Text
-                  style={[
-                    styles.typeButtonText,
-                    { color: type === "outgoing" ? "white" : colors.text },
-                  ]}
-                >
-                  Expense
+                value={amount}
+                onChangeText={(text) => {
+                  setAmount(text);
+                  if (errors.amount) {
+                    const newErrors = { ...errors };
+                    delete newErrors.amount;
+                    setErrors(newErrors);
+                  }
+                }}
+                placeholder="0.00"
+                placeholderTextColor={colors.tabIconDefault}
+                keyboardType="numeric"
+              />
+              {errors.amount && (
+                <Text style={[styles.errorText, { color: "#ef4444" }]}>
+                  {errors.amount}
                 </Text>
-              </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Description Input */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.text }]}>
+                Description
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: colors.card,
+                    color: colors.text,
+                    borderColor: errors.description ? "#ef4444" : colors.border,
+                  },
+                ]}
+                value={description}
+                onChangeText={(text) => {
+                  setDescription(text);
+                  if (errors.description) {
+                    const newErrors = { ...errors };
+                    delete newErrors.description;
+                    setErrors(newErrors);
+                  }
+                }}
+                placeholder="Enter description..."
+                placeholderTextColor={colors.tabIconDefault}
+                multiline
+              />
+              {errors.description && (
+                <Text style={[styles.errorText, { color: "#ef4444" }]}>
+                  {errors.description}
+                </Text>
+              )}
+            </View>
+
+            {/* Type Selection */}
+            <View style={styles.inputGroup}>
+              <Text style={[styles.label, { color: colors.text }]}>Type</Text>
+              <View style={styles.typeSelector}>
+                <TouchableOpacity
+                  style={[
+                    styles.typeButton,
+                    {
+                      backgroundColor: colors.card,
+                      borderColor: colors.border,
+                    },
+                    type === "incoming" && {
+                      backgroundColor: "#22c55e",
+                      borderColor: "#22c55e",
+                    },
+                  ]}
+                  onPress={() => setType("incoming")}
+                >
+                  <IconSymbol
+                    size={20}
+                    name="arrow.down.circle.fill"
+                    color={type === "incoming" ? "white" : colors.text}
+                  />
+                  <Text
+                    style={[
+                      styles.typeButtonText,
+                      { color: type === "incoming" ? "white" : colors.text },
+                    ]}
+                  >
+                    Income
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.typeButton,
+                    {
+                      backgroundColor: colors.card,
+                      borderColor: colors.border,
+                    },
+                    type === "outgoing" && {
+                      backgroundColor: "#ef4444",
+                      borderColor: "#ef4444",
+                    },
+                  ]}
+                  onPress={() => setType("outgoing")}
+                >
+                  <IconSymbol
+                    size={20}
+                    name="arrow.up.circle.fill"
+                    color={type === "outgoing" ? "white" : colors.text}
+                  />
+                  <Text
+                    style={[
+                      styles.typeButtonText,
+                      { color: type === "outgoing" ? "white" : colors.text },
+                    ]}
+                  >
+                    Expense
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
