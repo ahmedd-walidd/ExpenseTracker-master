@@ -8,14 +8,14 @@ import { useUpdateExpense } from "@/hooks/useExpenses";
 import { Expense } from "@/types/expense";
 import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    Modal,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Toast from "react-native-toast-message";
 
